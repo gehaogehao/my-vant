@@ -33,7 +33,6 @@
 
 <script type="text/ecmascript-6">
 import { ContactCard, ContactList, ContactEdit, Popup } from "vant";
-import axios from 'axios'
 const OK = 200
 export default {
   name: "contact",
@@ -85,15 +84,16 @@ export default {
       let result
       if (this.isEdit) {
         // this.list = this.list.map(item => (item.id === info.id ? info : item));
-          result = await axios({
-          url:"http://localhost:9000/api/contact/edit",
-          method:'put',
-          data:{
-            name:info.name,
-            tel:info.tel,
-            id:info.id
-          }
-        })
+        //   result = await axios({
+        //   url:"http://localhost:9000/api/contact/edit",
+        //   method:'put',
+        //   data:{
+        //     name:info.name,
+        //     tel:info.tel,
+        //     id:info.id
+        //   }
+        // })
+        result = await this.$http.contact.editContact({name:info.name,tel:info.tel,id:info.id})
       } else {
         // this.list.push(info);
         //   result = await axios({
@@ -104,42 +104,46 @@ export default {
         //     tel:info.tel
         //   }
         // })
-        let formData = new FormData()
-        formData.append('name',info.name)
-        formData.append('tel',info.tel)
-        result = await axios({
-          url:"http://localhost:9000/api/contact/new/form",
-          method:'post',
-          data:formData
-        })
+        // let formData = new FormData()
+        // formData.append('name',info.name)
+        // formData.append('tel',info.tel)
+        // result = await axios({
+        //   url:"http://localhost:9000/api/contact/new/form",
+        //   method:'post',
+        //   data:formData
+        // })
+        // result = await this.$http.contact.createContactByJson({name:info.name,tel:info.tel})
+        result = await this.$http.contact.createContactByForm({name:info.name,tel:info.tel})
       }
       await this.updataList()
-      this.chosenContactId = result.data.data.id;
+      this.chosenContactId = result.data.id;
     },
 
     // 删除联系人
     async onDelete(info) {
       this.showEdit = false;
       // this.list = this.list.filter(item => item.id !== info.id);
-      let result = await axios({
-        url:"http://localhost:9000/api/contact",
-        method:'delete',
-        params:{
-          id:info.id
-        }
-      })
+      // let result = await axios({
+      //   url:"http://localhost:9000/api/contact",
+      //   method:'delete',
+      //   params:{
+      //     id:info.id
+      //   }
+      // })
+      let result = await this.$http.contact.delContact({id:info.id})
       if (this.chosenContactId === info.id) {
         this.chosenContactId = null;
       }
-      if(result.data.code === OK) await this.updataList()
+      if(result.code === OK) await this.updataList()
     },
     async updataList(){
-       let result = await axios({
-        url:"http://localhost:9000/api/contactList",
-        method:'get'
-      })
-      if(result.data.code === OK){
-        this.list = result.data.data
+      //  let result = await axios({
+      //   url:"http://localhost:9000/api/contactList",
+      //   method:'get'
+      // })
+      let result = await this.$http.contact.getContactList()
+      if(result.code === OK){
+        this.list = result.data
       }
     }
   },
