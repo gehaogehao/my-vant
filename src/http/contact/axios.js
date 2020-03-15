@@ -3,8 +3,8 @@ import config from './config'
 import {loading,success,fail} from '@/util/toast.js'
 
 const contact = axios.create({
-    baseURL:"http://localhost:9000/api",
-    timeout:10000
+    baseURL:config.baseURL || '',
+    timeout:config.timeout || 10000
 })
 
 contact.interceptors.request.use(function (axiosConfig) {
